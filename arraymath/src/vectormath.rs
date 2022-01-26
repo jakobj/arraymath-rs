@@ -80,3 +80,54 @@ where
         Self::Output
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use assert_approx_eq::assert_approx_eq;
+
+    use super::*;
+
+    #[test]
+    fn test_addv() {
+        let a = [1.2, 1.3, 1.4];
+        let b = [1.3, 1.5, 2.4];
+        let c = a.addv(&b);
+        let c_expected: [f64; 3] = [2.5, 2.8, 3.8];
+        for i in 0..c.len() {
+            assert_approx_eq!(c[i], c_expected[i]);
+        }
+    }
+
+    #[test]
+    fn test_addv_assign() {
+        let mut a = [1.2, 1.3, 1.4];
+        let b = [1.3, 1.5, 2.4];
+        a.addv_assign(&b);
+        let a_expected: [f64; 3] = [2.5, 2.8, 3.8];
+        for i in 0..a.len() {
+            assert_approx_eq!(a[i], a_expected[i]);
+        }
+    }
+
+    #[test]
+    fn test_subv() {
+        let a = [1.2, 1.3, 1.4];
+        let b = [1.3, 1.5, 2.4];
+        let c = a.subv(&b);
+        let c_expected: [f64; 3] = [-0.1, -0.2, -1.0];
+        for i in 0..c.len() {
+            assert_approx_eq!(c[i], c_expected[i]);
+        }
+    }
+
+    #[test]
+    fn test_subv_assign() {
+        let mut a = [1.2, 1.3, 1.4];
+        let b = [1.3, 1.5, 2.4];
+        a.subv_assign(&b);
+        let a_expected: [f64; 3] = [-0.1, -0.2, -1.0];
+        for i in 0..a.len() {
+            assert_approx_eq!(a[i], a_expected[i]);
+        }
+    }
+}

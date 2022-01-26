@@ -69,3 +69,54 @@ where
         Self::Output
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use assert_approx_eq::assert_approx_eq;
+
+    use super::*;
+
+    #[test]
+    fn test_adds() {
+        let a = [1.2, 1.3, 1.4];
+        let b = 2.1;
+        let c = a.adds(b);
+        let c_expected: [f64; 3] = [3.3, 3.4, 3.5];
+        for i in 0..c.len() {
+            assert_approx_eq!(c[i], c_expected[i]);
+        }
+    }
+
+    #[test]
+    fn test_adds_assign() {
+        let mut a = [1.2, 1.3, 1.4];
+        let b = 2.1;
+        a.adds_assign(b);
+        let a_expected: [f64; 3] = [3.3, 3.4, 3.5];
+        for i in 0..a.len() {
+            assert_approx_eq!(a[i], a_expected[i]);
+        }
+    }
+
+    #[test]
+    fn test_subs() {
+        let a = [1.2, 1.3, 1.4];
+        let b = 2.1;
+        let c = a.subs(b);
+        let c_expected: [f64; 3] = [-0.9, -0.8, -0.7];
+        for i in 0..c.len() {
+            assert_approx_eq!(c[i], c_expected[i]);
+        }
+    }
+
+    #[test]
+    fn test_subs_assign() {
+        let mut a = [1.2, 1.3, 1.4];
+        let b = 2.1;
+        a.subs_assign(b);
+        let a_expected: [f64; 3] = [-0.9, -0.8, -0.7];
+        for i in 0..a.len() {
+            assert_approx_eq!(a[i], a_expected[i]);
+        }
+    }
+}
