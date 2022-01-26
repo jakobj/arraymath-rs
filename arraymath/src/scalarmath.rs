@@ -10,6 +10,12 @@ macro_rules! binary_op_scalar_inplace_prototype {
     };
 }
 
+macro_rules! binary_op_scalar_into_prototype {
+    ($function_name: ident, $input: ty, $into: ty) => {
+        fn $function_name(&self, other: $input, into: &mut $into);
+    };
+}
+
 macro_rules! binary_op_scalar {
     ($function_name: ident, $op: expr, $input: ty, $output: ty) => {
         #[inline(always)]
@@ -33,14 +39,28 @@ macro_rules! binary_op_scalar_inplace {
         }
     };
 }
+
+macro_rules! binary_op_scalar_into {
+    ($function_name: ident, $op: expr, $input: ty, $into: ty) => {
+        #[inline(always)]
+        fn $function_name(&self, other: $input, into: &mut $into) {
+            for i in 0..self.len() {
+                into[i] = $op(self[i], other);
+            }
+        }
+    };
+}
+
 pub trait ScalarMath {
     type Input;
     type Output;
 
     binary_op_scalar_prototype!(adds, Self::Input, Self::Output);
     binary_op_scalar_inplace_prototype!(adds_assign, Self::Input, Self::Output);
+    binary_op_scalar_into_prototype!(adds_into, Self::Input, Self::Output);
     binary_op_scalar_prototype!(subs, Self::Input, Self::Output);
     binary_op_scalar_inplace_prototype!(subs_assign, Self::Input, Self::Output);
+    binary_op_scalar_into_prototype!(subs_into, Self::Input, Self::Output);
 }
 
 impl<T, const N: usize> ScalarMath for [T; N]
@@ -61,10 +81,22 @@ where
         Self::Input,
         Self::Output
     );
+    binary_op_scalar_into!(
+        adds_into,
+        |lhs: T, rhs: T| lhs + rhs,
+        Self::Input,
+        Self::Output
+    );
     binary_op_scalar!(subs, |lhs: T, rhs: T| lhs - rhs, Self::Input, Self::Output);
     binary_op_scalar_inplace!(
         subs_assign,
         |lhs: &mut T, rhs: T| lhs.sub_assign(rhs),
+        Self::Input,
+        Self::Output
+    );
+    binary_op_scalar_into!(
+        subs_into,
+        |lhs: T, rhs: T| lhs - rhs,
         Self::Input,
         Self::Output
     );
@@ -99,6 +131,18 @@ mod tests {
     }
 
     #[test]
+    fn test_adds_into() {
+        let a = [1.2, 1.3, 1.4];
+        let b = 2.1;
+        let mut c = [99.0, 99.0, 99.0];
+        a.adds_into(b, &mut c);
+        let c_expected: [f64; 3] = [3.3, 3.4, 3.5];
+        for i in 0..a.len() {
+            assert_approx_eq!(c[i], c_expected[i]);
+        }
+    }
+
+    #[test]
     fn test_subs() {
         let a = [1.2, 1.3, 1.4];
         let b = 2.1;
@@ -117,6 +161,18 @@ mod tests {
         let a_expected: [f64; 3] = [-0.9, -0.8, -0.7];
         for i in 0..a.len() {
             assert_approx_eq!(a[i], a_expected[i]);
+        }
+    }
+
+    #[test]
+    fn test_subs_into() {
+        let a = [1.2, 1.3, 1.4];
+        let b = 2.1;
+        let mut c = [99.0, 99.0, 99.0];
+        a.subs_into(b, &mut c);
+        let c_expected: [f64; 3] = [-0.9, -0.8, -0.7];
+        for i in 0..a.len() {
+            assert_approx_eq!(c[i], c_expected[i]);
         }
     }
 }
