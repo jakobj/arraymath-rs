@@ -5,16 +5,22 @@ Math on arrays. Fast and simple.
 This crate aims to simplify using math operations on arrays. It does so by providing a trait which implements common operations (addition, substraction, ...) on plain arrays, allowing you to write code like this:
 
 ``` rust
-use arraymath::ArrayMath;
+use arraymath::ScalarMath;
+use arraymath::VectorMath;
 
 fn main() {
     let a = [1.2, 1.3, 1.4];
     let b = [1.3, 1.5, 2.4];
-    println!("{:?}", a.add(&b)); // -> [2.5, 2.8, 3.8]
-    println!("{:?}", a.sub(&b)); // -> [-0.10000000000000009, -0.19999999999999996, -1.0]
+    // add two arrays
+    println!("{:?}", a.addv(&b)); // -> [2.5, 2.8, 3.8]
+    // substract two arrays
+    println!("{:?}", a.subv(&b)); // -> [-0.10000000000000009, -0.19999999999999996, -1.0]
     let mut a = [1.2, 1.3, 1.4];
-    a.add_assign(&b);
-    println!("{:?}", a); // -> [2.5, 2.8, 3.8]
+    // add two arrays inplace (modifies a)
+    a.addv_assign(&b); // -> [2.5, 2.8, 3.8]
+    println!("{:?}", a);
+    // add an array and a scalar
+    println!("{:?}", a.adds(2.0)); // -> [4.5, 4.8, 5.8]
 }
 ```
 
